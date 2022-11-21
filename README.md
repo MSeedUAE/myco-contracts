@@ -1,13 +1,16 @@
-# Sample Hardhat Project
+# MyCo Platform Smart Contracts
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+## Usage
 
-Try running some of the following tasks:
+```
+npm install
+```
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
+## Build / Test / Deploy
+
+```
+$ npm run build
+$ npm run coverage
+$ npm run deploy
+$ npm run test
 ```
