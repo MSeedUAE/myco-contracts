@@ -1,0 +1,33 @@
+{
+  "name": "myco-v2",
+  "version": "1.0.0",
+  "description": "MyCo TokenV2, Migration & DAOV1 Smart Contracts",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "clean": "npx hardhat clean",
+    "build": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "prettier:dryrun": "prettier ./contracts/**/*.sol test/**/*.ts ./deploy/**/*.ts",
+    "prettier:write": "prettier --write ./contracts/**/*.sol test/**/*.ts ./deploy/**/*.ts",
+    "lint": "npm lint:sol",
+    "lint:sol": "solhint contracts/**/*.sol contracts/*.sol"
+  },
+  "keywords": [
+    "MyCo",
+    "MContent",
+    "Watch2Earn",
+    "Watch to Earn"
+  ],
+  "author": "Oluwafemi Alofe",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.12.2"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0",
+    "@openzeppelin/contracts-upgradeable": "^4.8.0",
+    "solhint": "^3.3.7"
+  }
+}
