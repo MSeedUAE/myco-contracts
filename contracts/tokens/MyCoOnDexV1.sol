@@ -2,14 +2,15 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../uniswapv2/UniswapV2Router02.sol";
 
-abstract contract MyCoOnDexV1 is ReentrancyGuardUpgradeable {
+abstract contract MyCoOnDexV1 is ReentrancyGuardUpgradeable, AccessControlUpgradeable {
     IUniswapV2Router02 public uniswapV2Router;
     address public uniswapV2Pair;
     address public WBNB;
 
-    function createPair(address _router) returns () {
+    function createPair(address _router) public onlyRole(DEFAULT_ADMIN_ROLE) returns () {
         uniswapV2Router = IUniswapV2Router02(_router);
         WBNB = uniswapV2Router.WETH();
         // Create a uniswap pair for this new token
@@ -19,6 +20,7 @@ abstract contract MyCoOnDexV1 is ReentrancyGuardUpgradeable {
         );
     }
 
+    //Todo: More research and conclusion needed on Buy back mechnism
     function swapAndLiquify(uint256 contractTokenBalance) private nonReentrant {
         // split the contract balance into halves
         uint256 half = contractTokenBalance.div(2);
@@ -75,10 +77,10 @@ abstract contract MyCoOnDexV1 is ReentrancyGuardUpgradeable {
         );
     }
 
-    function updateRouterAndPair(address _uniswapV2Router, address _uniswapV2Pair)
-        public
-        onlyOwner
-    {
+    function updateRouterAndPair(
+        address _uniswapV2Router,
+        address _uniswapV2Pair
+    ) public onlyOwner {
         uniswapV2Router = IUniswapV2Router02(_uniswapV2Router);
         uniswapV2Pair = _uniswapV2Pair;
         WBNB = uniswapV2Router.WETH();

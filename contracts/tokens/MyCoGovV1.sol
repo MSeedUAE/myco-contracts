@@ -10,7 +10,15 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpg
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /// @custom:security-contact oluwafemi@mcontent.net
-contract VOTEDESCROWMYCOTOKEN is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, PausableUpgradeable, AccessControlUpgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable {
+contract MyCoGovV1 is
+    Initializable,
+    ERC20Upgradeable,
+    ERC20BurnableUpgradeable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    ERC20PermitUpgradeable,
+    ERC20VotesUpgradeable
+{
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -19,17 +27,17 @@ contract VOTEDESCROWMYCOTOKEN is Initializable, ERC20Upgradeable, ERC20BurnableU
         _disableInitializers();
     }
 
-    function initialize() initializer public {
-        __ERC20_init("VOTED ESCROW MYCO TOKEN", "veMYCO");
+    function initialize() public initializer {
+        __ERC20_init("MYCO GOVERNANCE TOKEN", "MYCOGOV");
         __ERC20Burnable_init();
         __Pausable_init();
         __AccessControl_init();
-        __ERC20Permit_init("VOTED ESCROW MYCO TOKEN");
+        __ERC20Permit_init("MYCO GOVERNANCE TOKEN");
         __ERC20Votes_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
-        _mint(msg.sender, 1000000000 * 10 ** decimals());
+        _mint(msg.sender, 1_000_000_000 * 10 ** decimals());
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
@@ -45,34 +53,35 @@ contract VOTEDESCROWMYCOTOKEN is Initializable, ERC20Upgradeable, ERC20BurnableU
         _mint(to, amount);
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 amount)
-        internal
-        whenNotPaused
-        override
-    {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override whenNotPaused {
         super._beforeTokenTransfer(from, to, amount);
     }
 
     // The following functions are overrides required by Solidity.
 
-    function _afterTokenTransfer(address from, address to, uint256 amount)
-        internal
-        override(ERC20Upgradeable, ERC20VotesUpgradeable)
-    {
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override(ERC20Upgradeable, ERC20VotesUpgradeable) {
         super._afterTokenTransfer(from, to, amount);
     }
 
-    function _mint(address to, uint256 amount)
-        internal
-        override(ERC20Upgradeable, ERC20VotesUpgradeable)
-    {
+    function _mint(
+        address to,
+        uint256 amount
+    ) internal override(ERC20Upgradeable, ERC20VotesUpgradeable) {
         super._mint(to, amount);
     }
 
-    function _burn(address account, uint256 amount)
-        internal
-        override(ERC20Upgradeable, ERC20VotesUpgradeable)
-    {
+    function _burn(
+        address account,
+        uint256 amount
+    ) internal override(ERC20Upgradeable, ERC20VotesUpgradeable) {
         super._burn(account, amount);
     }
 }

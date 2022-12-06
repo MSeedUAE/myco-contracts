@@ -10,3 +10,5 @@ cache
 artifacts
 study
 
+.DS_Store
+contracts/.DS_Store

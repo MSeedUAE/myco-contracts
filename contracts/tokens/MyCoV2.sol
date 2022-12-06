@@ -11,6 +11,7 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol"; // Co
 import "@openzeppelin/contracts/utils/Context.sol"; // Context is imported to use _msgSender()
 
 import "./Taxable.sol";
+import "./MyCoOnDexV1.sol";
 
 /// @custom:security-contact oluwafemi@mcontent.net
 /**
@@ -26,7 +27,8 @@ contract MYCOTOKENV2 is
     ERC20BurnableUpgradeable,
     PausableUpgradeable,
     AccessControlUpgradeable,
-    ReentrancyGuardUpgradeable
+    ReentrancyGuardUpgradeable,
+    MyCoOnDexV1,
 {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -50,7 +52,7 @@ contract MYCOTOKENV2 is
         _grantRole(GOVERNOR_ROLE, msg.sender);
         _grantRole(PRESIDENT_ROLE, msg.sender);
         _grantRole(EXCLUDED_ROLE, msg.sender);
-        _mint(msg.sender, 10000000000 * 10**decimals());
+        _mint(msg.sender, 10_000_000_000 * 10 ** decimals());
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
@@ -106,6 +108,10 @@ contract MYCOTOKENV2 is
         _updatetax(newtax);
     }
 
+    function updateCffTax(uint256 newtax) public onlyRole(GOVERNOR_ROLE) {
+        _updatecfftax(newtax);
+    }
+
     function updateTaxDestination(address newdestination) public onlyRole(PRESIDENT_ROLE) {
         _updatetaxdestination(newdestination);
     }
@@ -117,7 +123,9 @@ contract MYCOTOKENV2 is
      * • The PRESIDENT_ROLE is not the GOVERNOR_ROLE because the address to change the destination address and tax amount is a target for an exploit.
      * • It is recommended that the DEFAULT_ADMIN_ROLE renounce either/both the PRESIDENT_ROLE and/or the GOVERNOR_ROLE and assign these to unconnected accounts.
      * • Once all roles are set up, it is recommended that the DEFAULT_ADMIN_ROLE add a Multisig admin and renounce the admin role as well as any unnecessary roles.
-     * • To send the tax to multiple end recipients, consider setting the tax destination address to a splitter contract like PaymentSplitter.sol or 0xSplits.
+     * • `cfftax()` is deducted as tax for the CFF fund on every transfer
+     * • `burntax()` is burned out of the circulating supply from every transfer
+     * • Tax can be turned on or off. `cfftax()` and `burntax()` is not deducted from addresses with the role EXCLUDED_ROLE
      */
     function _transfer(
         address from,
@@ -138,7 +146,8 @@ contract MYCOTOKENV2 is
             // If not to/from a tax excluded address & tax is on...
             require(balanceOf(from) >= amount, "ERC20: transfer amount exceeds balance"); // Makes sure sender has the required token amount for the total.
             // If the above requirement is not met, then it is possible that the sender could pay the tax but not the recipient, which is bad...
-            super._transfer(from, taxdestination(), (amount * thetax()) / 10000); // Transfers tax to the tax destination address.
+            super._burn(from, (amount * burntax()) / 10000); // Transfers tax to the tax destination address.
+            super._transfer(from, taxdestination(), (amount * cfftax()) / 10000); // Transfers tax to the tax destination address.
             super._transfer(from, to, (amount * (10000 - thetax())) / 10000); // Transfers the remainder to the recipient.
         }
     }
