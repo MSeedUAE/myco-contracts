@@ -24,9 +24,9 @@ abstract contract Taxable is Context {
     uint256 private _thetax; // Stores tax amount as a uint256 integer.
     uint256 private _maxtax; // Stores maximum tax amount as a uint256 integer.
     uint256 private _mintax; // Stores minimum tax amount as a uint256 integer.
-    address private _taxdestination; // Stores cff tax destination as a blockchain address type.
+    address private _taxdestination; // Stores ccf tax destination as a blockchain address type.
 
-    uint256 public _cfftax; // Stores maximum tax amount as a uint256 integer.
+    uint256 public _ccftax; // Stores maximum tax amount as a uint256 integer.
     uint256 public _burntax; // Stores maximum tax amount as a uint256 integer.
 
     /// @dev Constructor adds values to constants.
@@ -40,7 +40,7 @@ abstract contract Taxable is Context {
         _mintax = 25; // Minimum tax hardcoded to 0.25% = 25 points.
         _taxdestination = _msgSender(); // Tax destination defaults to deployer.
 
-        _cfftax = 300;
+        _ccftax = 300;
         _burntax = 200;
     }
 
@@ -70,9 +70,9 @@ abstract contract Taxable is Context {
         return _thetax; // Returns the current tax amount in points.
     }
 
-    function cfftax() public view virtual returns (uint256) {
+    function ccftax() public view virtual returns (uint256) {
         // Function enables public interface for tax amount in points.
-        return _cfftax; // Returns the current tax amount in points.
+        return _ccftax; // Returns the current tax amount in points.
     }
 
     function burntax() public view virtual returns (uint256) {
@@ -119,18 +119,18 @@ abstract contract Taxable is Context {
         emit TaxChanged(_msgSender()); // Emits the "Tax Changed" event to the blockchain.
     }
 
-    function _updatecfftax(uint256 newtax) internal virtual {
-        // Function updates the cff tax amount if in allowable range and emits "Tax Changed" event.
+    function _updateccftax(uint256 newtax) internal virtual {
+        // Function updates the ccf tax amount if in allowable range and emits "Tax Changed" event.
         require(newtax <= _maxtax - _burntax, "Taxable: tax is too high"); // Throws the call if the new tax is above the maximum tax.
         require(newtax >= _mintax - _burntax, "Taxable: tax is too low"); // Throws the call if the new tax is below the minimum tax.
-        _cfftax = newtax; // Sets the tax amount integer to the new value, updating the tax amount.
+        _ccftax = newtax; // Sets the tax amount integer to the new value, updating the tax amount.
         emit TaxChanged(_msgSender()); // Emits the "Tax Changed" event to the blockchain.
     }
 
     function _updateburntax(uint256 newtax) internal virtual {
-        // Function updates the cff tax amount if in allowable range and emits "Tax Changed" event.
-        require(newtax <= _maxtax - _cfftax, "Taxable: tax is too high"); // Throws the call if the new tax is above the maximum tax.
-        require(newtax >= _mintax - _cfftax, "Taxable: tax is too low"); // Throws the call if the new tax is below the minimum tax.
+        // Function updates the ccf tax amount if in allowable range and emits "Tax Changed" event.
+        require(newtax <= _maxtax - _ccftax, "Taxable: tax is too high"); // Throws the call if the new tax is above the maximum tax.
+        require(newtax >= _mintax - _ccftax, "Taxable: tax is too low"); // Throws the call if the new tax is below the minimum tax.
         _burntax = newtax; // Sets the tax amount integer to the new value, updating the tax amount.
         emit TaxChanged(_msgSender()); // Emits the "Tax Changed" event to the blockchain.
     }
