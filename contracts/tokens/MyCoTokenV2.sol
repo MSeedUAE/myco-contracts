@@ -1,17 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-// import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol"; // Context is imported to use _msgSender()
 import "@openzeppelin/contracts/utils/Context.sol"; // Context is imported to use _msgSender()
 
 import "./Taxable.sol";
 import "./MyCoOnDexV1.sol";
+import "hardhat/console.sol";
 
 /// @custom:security-contact oluwafemi@mcontent.net
 /**
@@ -41,6 +38,7 @@ contract MyCoTokenV2 is Taxable, Initializable, MyCoOnDexV1, PausableUpgradeable
         _grantRole(EXCLUDED_ROLE, msg.sender);
         _mint(msg.sender, 10_000_000_000 * 10 ** decimals());
         _grantRole(MINTER_ROLE, msg.sender);
+        _taxon();
     }
 
     function _msgSender()
@@ -99,7 +97,7 @@ contract MyCoTokenV2 is Taxable, Initializable, MyCoOnDexV1, PausableUpgradeable
         _updateburntax(newburn);
     }
 
-    function updateCcfTax(uint256 newtax) public onlyRole(GOVERNOR_ROLE) {
+    function updateCcf(uint256 newtax) public onlyRole(GOVERNOR_ROLE) {
         _updateccftax(newtax);
     }
 
@@ -138,9 +136,9 @@ contract MyCoTokenV2 is Taxable, Initializable, MyCoOnDexV1, PausableUpgradeable
             // If not to/from a tax excluded address & tax is on...
             require(balanceOf(from) >= amount, "ERC20: transfer amount exceeds balance"); // Makes sure sender has the required token amount for the total.
             // If the above requirement is not met, then it is possible that the sender could pay the tax but not the recipient, which is bad...
-            super._burn(from, (amount * burntax()) / 10000); // Transfers tax to the tax destination address.
-            super._transfer(from, taxdestination(), (amount * ccftax()) / 10000); // Transfers tax to the tax destination address.
-            super._transfer(from, to, (amount * (10000 - thetax())) / 10000); // Transfers the remainder to the recipient.
+            super._burn(from, (amount * burnTax()) / 10000); // Transfers tax to the tax destination address.
+            super._transfer(from, taxDestination(), (amount * ccfTax()) / 10000); // Transfers tax to the tax destination address.
+            super._transfer(from, to, (amount * (10000 - theTax())) / 10000); // Transfers the remainder to the recipient.
         }
     }
 

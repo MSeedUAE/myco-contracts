@@ -9,8 +9,10 @@
 pragma solidity ^0.8.0; // Must use solidity 0.8.0 or higher. Math isn't so safe otherwise...
 
 import "@openzeppelin/contracts/utils/Context.sol"; // Context is imported to use _msgSender()
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 abstract contract Taxable is Context {
+    using SafeMath for uint256;
     /// @dev Events defined for any contract changes.
 
     event TaxOn(address account); // Emits event "Tax On" when tax is enabled, returning the address of the Governor.
@@ -65,22 +67,22 @@ abstract contract Taxable is Context {
         return _taxed; // Returns true if tax is enabled, false if it is disabled.
     }
 
-    function thetax() public view virtual returns (uint256) {
+    function theTax() public view virtual returns (uint256) {
         // Function enables public interface for tax amount in points.
         return _thetax; // Returns the current tax amount in points.
     }
 
-    function ccftax() public view virtual returns (uint256) {
+    function ccfTax() public view virtual returns (uint256) {
         // Function enables public interface for tax amount in points.
         return _ccftax; // Returns the current tax amount in points.
     }
 
-    function burntax() public view virtual returns (uint256) {
+    function burnTax() public view virtual returns (uint256) {
         // Function enables public interface for tax amount in points.
         return _burntax; // Returns the current tax amount in points.
     }
 
-    function taxdestination() public view virtual returns (address) {
+    function taxDestination() public view virtual returns (address) {
         // Function enables public interface for tax destination address.
         return _taxdestination; // Returns the destination address for the tax.
     }
@@ -121,16 +123,16 @@ abstract contract Taxable is Context {
 
     function _updateccftax(uint256 newtax) internal virtual {
         // Function updates the ccf tax amount if in allowable range and emits "Tax Changed" event.
-        require(newtax <= _maxtax - _burntax, "Taxable: tax is too high"); // Throws the call if the new tax is above the maximum tax.
-        require(newtax >= _mintax - _burntax, "Taxable: tax is too low"); // Throws the call if the new tax is below the minimum tax.
+        require(newtax <= _maxtax.sub(_burntax), "Taxable: tax is too high"); // Throws the call if the new tax is above the maximum tax.
+        require(newtax >= _mintax, "Taxable: tax is too low"); // Throws the call if the new tax is below the minimum tax.
         _ccftax = newtax; // Sets the tax amount integer to the new value, updating the tax amount.
         emit TaxChanged(_msgSender()); // Emits the "Tax Changed" event to the blockchain.
     }
 
     function _updateburntax(uint256 newtax) internal virtual {
         // Function updates the ccf tax amount if in allowable range and emits "Tax Changed" event.
-        require(newtax <= _maxtax - _ccftax, "Taxable: tax is too high"); // Throws the call if the new tax is above the maximum tax.
-        require(newtax >= _mintax - _ccftax, "Taxable: tax is too low"); // Throws the call if the new tax is below the minimum tax.
+        require(newtax <= _maxtax.sub(_ccftax), "Taxable: tax is too high"); // Throws the call if the new tax is above the maximum tax.
+        require(newtax >= _mintax, "Taxable: tax is too low"); // Throws the call if the new tax is below the minimum tax.
         _burntax = newtax; // Sets the tax amount integer to the new value, updating the tax amount.
         emit TaxChanged(_msgSender()); // Emits the "Tax Changed" event to the blockchain.
     }

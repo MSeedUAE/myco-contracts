@@ -9,8 +9,8 @@ npm install
 ## Build / Test / Deploy
 
 ```
-$ npm run build
-$ npm run coverage
-$ npm run deploy
-$ npm run test
+$ yarn build
+$ yarn coverage
+$ yarn deploy
+$ yarn test
 ```
